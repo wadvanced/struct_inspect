@@ -36,23 +36,38 @@ defmodule StructInspect.Opts do
   Creates a new `StructInspect.Opts` struct.
 
   It can receive:
+
   - A map or keyword list of ommits to override the default values.
-  - A list of atoms. When a list of atoms is provided, ONLY the named keys will be set to true and the rest to false.
-  - Another `StructInspect.Opts` struct, which will be returned as is.
-  - Nothing, in which case it will return the default struct.
+  - A list of atoms, where only the named keys are set to `true` and the rest to `false`.
+  - Another `StructInspect.Opts` struct, which is returned as is.
+  - Nothing, in which case it returns the default struct.
 
   ## Parameters
-  - `ommits` (map() | keyword() | list(atom()) | t()) - The ommits to create the struct.
+
+  - `ommits` (attributes()) - The ommits to create the struct. Defaults to `nil`.
 
   ## Returns
-  %StructInspect.Opts{} - A new `StructInspect.Opts` struct.
+
+  t() - A new `StructInspect.Opts` struct.
   """
   @spec new() :: t()
-  def new(), do: struct(__MODULE__)
+  def new, do: %__MODULE__{}
 
   @spec new(attributes()) :: t()
   def new(ommits), do: change(%__MODULE__{}, ommits)
 
+  @doc """
+  Changes an existing `StructInspect.Opts` struct with new ommits.
+
+  ## Parameters
+
+  - `options` (t()) - The options struct to change.
+  - `ommits` (attributes()) - The new ommits to apply.
+
+  ## Returns
+
+  t() - The modified `StructInspect.Opts` struct.
+  """
   @spec change(t(), attributes()) :: t()
   def change(options, %__MODULE__{} = ommits), do: struct(options, ommits)
   def change(options, ommits) when is_map(ommits), do: options |> new() |> struct(ommits)
@@ -74,6 +89,19 @@ defmodule StructInspect.Opts do
     end
   end
 
+  @doc """
+  Applies the given attributes to the default options.
+
+  The default options are taken from the application environment.
+
+  ## Parameters
+
+  - `attrs` (attributes()) - The attributes to apply. Defaults to `[]`.
+
+  ## Returns
+
+  t() - A new `StructInspect.Opts` struct with the applied attributes.
+  """
   @spec apply_to_defaults(attributes()) :: t()
   def apply_to_defaults(attrs \\ [])
 

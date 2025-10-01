@@ -85,21 +85,22 @@ defmodule StructInspect do
   `ommits` list, and then constructs the `Inspect.Algebra` document for the final output.
 
   ## Parameters
+
   - `module` (module()) - The struct's module.
   - `struct` (map() | struct()) - The struct or map to be inspected.
   - `opts` (Inspect.Opts.t()) - The inspection options.
   - `ommits` (keyword()) - A list of atoms representing the types of empty values to omit.
 
   ## Returns
+
   Inspect.Algebra.t() - The algebra document representing the compacted struct.
   """
   @spec compact(
           module(),
-          any(),
+          map() | struct(),
           Inspect.Opts.t(),
           list(atom()) | keyword() | StructInspect.Opts.t()
         ) :: Inspect.Algebra.t()
-
   def compact(module, struct, opts, ommits) do
     filtered_fields =
       ommits
@@ -107,7 +108,9 @@ defmodule StructInspect do
       |> Map.from_struct()
       |> filter_empty_fields(struct)
 
-    Algebra.container_doc(name(module, struct), filtered_fields, "}", opts, &format_field/2)
+    module
+    |> name(struct)
+    |> Algebra.container_doc(filtered_fields, "}", opts, &format_field/2)
   end
 
   ## PRIVATE
