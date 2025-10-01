@@ -32,7 +32,8 @@ defmodule StructInspect.MixProject do
         source_ref: "v#{@version}",
         source_url: "https://github.com/wadvanced/struct_inspect",
         extras: ["README.md", "LICENSE.md"]
-      ]
+      ],
+      aliases: aliases()
     ]
   end
 
@@ -50,10 +51,22 @@ defmodule StructInspect.MixProject do
   defp deps do
     [
       ## Dev dependencies
-      {:credo, "~> 1.7", only: [:dev], runtime: false},
-      {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
-      {:doctor, "~> 0.22", only: :dev, runtime: false},
-      {:ex_doc, "~> 0.38", only: :dev, runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:doctor, "~> 0.22", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.38", only: [:dev, :test], runtime: false}
+    ]
+  end
+
+  defp aliases do
+    [
+      consistency: [
+        "format",
+        "compile --warnings-as-errors",
+        "credo --strict",
+        "dialyzer",
+        "doctor"
+      ]
     ]
   end
 end
