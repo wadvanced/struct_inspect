@@ -1,6 +1,7 @@
 # StructInspect
 
 [![Hex.pm](https://img.shields.io/hexpm/v/struct_inspect.svg)](https://hex.pm/packages/struct_inspect)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
 `StructInspect` is a highly configurable library to customize struct inspection in Elixir. It allows you to omit fields with "empty" values, producing cleaner and more readable output, especially for complex structs.
 
