@@ -16,7 +16,7 @@ defmodule StructInspectOverrides do
   This macro reads the `:struct_inspect, :overrides` configuration and for each module,
   it generates a `defimpl Inspect` that uses `StructInspect.compact/4` for inspection.
   """
-  @spec __using__(any()) :: Macro.t()
+  @spec __using__(keyword()) :: Macro.t()
   defmacro __using__(_opts) do
     quoted_overrides =
       @inspect_overrides
@@ -36,7 +36,10 @@ defmodule StructInspectOverrides do
     end
   end
 
+  ## PRIVATE
+
   # Parses the override configuration and returns a list of {module, ommits} tuples.
+  @spec get_overrides(keyword()) :: [{module(), keyword()}]
   defp get_overrides(overrides) do
     overrides
     |> Enum.map(&override/1)
@@ -44,19 +47,19 @@ defmodule StructInspectOverrides do
   end
 
   # Normalizes an override entry into a {module, ommits} tuple.
+  @spec override(atom() | {atom(), keyword()}) :: {module(), keyword()} | nil
   defp override(module) when is_atom(module), do: {module, StructInspect.Opts.new()}
-
   defp override({module, attrs}), do: {module, attrs}
-
   defp override(_value), do: nil
 
   # Rejects invalid override entries.
+  @spec reject_override(nil | {module(), any()}) :: boolean()
   defp reject_override(nil), do: true
-
   defp reject_override({module, _attrs}), do: valid_module?(module)
 
+  # Validates if a module is a valid override target.
+  @spec valid_module?(module() | nil) :: boolean()
   defp valid_module?(nil), do: false
-
   defp valid_module?(StructInspect.Opts), do: false
 
   defp valid_module?(module) do
