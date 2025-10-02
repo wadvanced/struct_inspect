@@ -26,7 +26,7 @@ defmodule StructInspect.Opts do
             empty_list: true,
             empty_map: true,
             empty_struct: true,
-            empty_tuple: false,
+            empty_tuple: true,
             true_value: false,
             false_value: false
 
