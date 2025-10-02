@@ -5,6 +5,8 @@
 
 `StructInspect` is a highly configurable library to customize struct inspection in Elixir. It allows you to omit fields with "empty" values, producing cleaner and more readable output, especially for complex structs.
 
+For a more detailed guide with advanced usage examples, please see the [Usage Guide](guides/usage.md).
+
 ## Installation
 
 The package can be installed by adding `struct_inspect` to your list of dependencies in `mix.exs`:
@@ -94,13 +96,13 @@ The options passed to `use StructInspect` will be merged with the application-wi
 The following options are available in `StructInspect.Opts`:
 
 -   `nil_value`: Omits `nil` values. (default: `true`)
--   `zero_integer_value`: Omits `0`. (default: `true`)
--   `zero_float_value`: Omits `0.0`. (default: `true`)
+-   `zero_integer_value`: Omits `0`. (default: `false`)
+-   `zero_float_value`: Omits `0.0`. (default: `false`)
 -   `empty_string`: Omits `""`. (default: `true`)
 -   `empty_list`: Omits `[]`. (default: `true`)
--   `empty_map`: Omits `%{}`. (default: `false`)
+-   `empty_map`: Omits `%{}`. (default: `true`)
 -   `empty_struct`: Omits empty structs. (default: `true`)
--   `empty_tuple`: Omits `{}`. (default: `false`)
+-   `empty_tuple`: Omits `{}`. (default: `true`)
 -   `true_value`: Omits `true`. (default: `false`)
 -   `false_value`: Omits `false`. (default: `false`)
 

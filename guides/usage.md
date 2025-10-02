@@ -1,6 +1,6 @@
 # Usage Guide
 
-`StructInspect` is a powerful Elixir library for customizing how your structs are inspected. It helps you create cleaner, more readable output by omitting fields with "empty" or unwanted values. This is especially useful for large, complex structs.
+`StructInspect` provides a configurable implementation of the `Inspect` protocol for Elixir structs. It allows developers to define rules for omitting fields with specific values—such as `nil`, `""`, or `[]`—from the inspection output. This can result in a more concise representation of data structures, especially in logging and interactive sessions.
 
 ## Getting Started
 
@@ -124,7 +124,7 @@ Here is a complete list of all the available omission options that you can use t
 -   `empty_string` (default: `true`): Omits fields with an empty string value (`""`).
 -   `empty_list` (default: `true`): Omits fields with an empty list (`[]`).
 -   `empty_map` (default: `false`): Omits fields with an empty map (`%{}`).
--   `empty_struct` (default: `true`): Omits fields that contain an "empty" struct.
+-   `empty_struct` (default: `true`): Omits fields that contain an "empty" struct. See ['What is an "Empty Struct"?'](#what-is-an-empty-struct) below.
 -   `empty_tuple` (default: `false`): Omits fields with an empty tuple (`{}`).
 -   `true_value` (default: `false`): Omits fields with a boolean value of `true`.
 -   `false_value` (default: `false`): Omits fields with a boolean value of `false`.
@@ -149,7 +149,7 @@ If you create an `Address` struct like this, it is considered empty because all 
 address = %Address{}
 # %Address{}
 # or
-address = %Address{street: nil, city: nil, zip_code: nil}
+address = %Address{street: nil, city: nil, zip_code: "00000-0000"}
 ```
 
 And you have a `User` struct that contains this address:
@@ -164,54 +164,62 @@ end
 user = %User{name: "Gemini", address: address}
 ```
 
-When you inspect the `user` struct, the `:address` field will be omitted because the `address` struct itself is considered empty.
+When you inspect the `user` struct, the `:address` field will be omitted because the `address` struct itself is considered empty, even though zip_code contains "00000-0000".
 
 ```elixir
 iex> user
 %User{name: "Gemini"}
 ```
 
-This is a powerful feature that helps to keep your logs and console output clean, especially when dealing with nested structs.
+This helps to keep your logs and console output clean, especially when dealing with nested structs.
 
 ## Overriding Structs from Dependencies
 
-Sometimes you may want to change the inspection behavior of a struct defined in one of your dependencies. `StructInspect` allows you to do this by creating an "override" module.
+`StructInspect` provides a clean way to customize the inspection of structs from your dependencies without altering their source code. This is achieved through a configuration-based override system.
 
-Let's say you have a dependency that defines a `ThirdParty.User` struct, and you want to customize its inspection. You can create a module in your own application to override it.
+A interesting case is the `Phoenix.LiveView.Socket` struct, which is notoriously large and can clutter your development console.
 
-A good place for these overrides is in a file like `lib/struct_inspect_overrides.ex`.
+### Configure the Overrides
 
-```elixir
-# In lib/struct_inspect_overrides.ex
-
-defmodule ThirdParty.User do
-  use StructInspect, false_value: true
-
-  defstruct [:id, :name, :is_active]
-end
-```
-
-### Handling Module Redefinition Warnings
-
-When you override a module like this, the Elixir compiler will generate a warning:
-
-```
-warning: redefining module ThirdParty.User
-```
-
-This is expected because you are intentionally redefining a module that already exists. To suppress this warning, you can use the `@dialyzer {:nowarn_function, {:redefine_module, 1}}` attribute in your override module.
-
-Here is the complete example of how to override a struct and suppress the warning:
+In your `config/config.exs` file, add the `:overrides` configuration for `struct_inspect`. You can list the modules you want to override.
 
 ```elixir
-# In lib/struct_inspect_overrides.ex
-
-defmodule ThirdParty.User do
-  @dialyzer {:nowarn_function, {:redefine_module, 1}}
-  use StructInspect, false_value: true
-
-  defstruct [:id, :name, :is_active]
-end
+# in config/config.exs
+config :struct_inspect,
+  overrides: [
+    Phoenix.LiveView.Socket
+  ]
 ```
 
-Now, whenever a `ThirdParty.User` struct is inspected anywhere in your application, it will use the options you've defined in your override module.
+By default, this will use the standard `StructInspect` options. If you want to specify custom options for a particular struct, you can use a tuple where the second element can be a keyword, list of atoms or a map, see the [Configuration](#configuration) section in this document. Here is a sample configuration:
+
+```elixir
+# in config/config.exs
+config :struct_inspect,
+  overrides: [
+    {Phoenix.LiveView.Socket, [nil_value: false, empty_struct: false]},
+    Another.Module
+  ]
+```
+
+In the example above, for `Phoenix.Live_View.Socket`, we are specifying that we are overriding the defaults by allowing nil values and empty struct to be.
+
+### Handling Compiler Warnings
+
+When you use the `:overrides` configuration, the Elixir compiler will issue a warning for each module you are overriding, similar to this:
+
+```
+warning: redefining protocol implementation for Inspect for Phoenix.LiveView.Socket
+```
+
+This is expected. You are intentionally replacing the default `Inspect` implementation for that module with a custom one provided by `StructInspect`.
+
+It is recommended to keep these warnings visible to be aware of the protocol overrides. However, once you have acknowledged them, you can suppress them by setting the `ignore_compiler_warning` option to `true` in your `config/config.exs`:
+
+```elixir
+# in config/config.exs
+config :struct_inspect,
+  ignore_compiler_warning: true
+```
+
+This will set the `ignore_module_conflict` and `ignore_already_consolidated` compiler options, effectively hiding the warnings for the protocol overrides.
