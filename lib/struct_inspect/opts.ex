@@ -50,10 +50,9 @@ defmodule StructInspect.Opts do
 
   t() - A new `StructInspect.Opts` struct.
   """
-  @spec new() :: t()
-  def new, do: %__MODULE__{}
-
   @spec new(attributes()) :: t()
+  def new(ommits \\ [])
+  def new(nil), do: %__MODULE__{}
   def new(ommits), do: change(%__MODULE__{}, ommits)
 
   @doc """
@@ -69,12 +68,14 @@ defmodule StructInspect.Opts do
   t() - The modified `StructInspect.Opts` struct.
   """
   @spec change(t(), attributes()) :: t()
-  def change(options, %__MODULE__{} = ommits), do: struct(options, ommits)
-  def change(options, ommits) when is_map(ommits), do: options |> new() |> struct(ommits)
+  def change(%StructInspect.Opts{} = options, %__MODULE__{} = ommits), do: struct(options, ommits)
 
-  def change(options, []), do: options
+  def change(%StructInspect.Opts{} = options, ommits) when is_map(ommits),
+    do: struct(options, ommits)
 
-  def change(options, ommits) when is_list(ommits) do
+  def change(%StructInspect.Opts{} = options, []), do: options
+
+  def change(%StructInspect.Opts{} = options, ommits) when is_list(ommits) do
     if Keyword.keyword?(ommits) do
       struct(options, ommits)
     else
