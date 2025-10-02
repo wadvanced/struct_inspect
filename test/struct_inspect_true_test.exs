@@ -1,6 +1,8 @@
 defmodule StructInspectTest.True do
+  @moduledoc """
+  Tests the behavior of the `StructInspect` macro when specific `ommits` are set to `true`.
+  """
   use ExUnit.Case
-  doctest StructInspect
 
   alias StructInspectTest.Address
   alias StructInspectTest.Helper
