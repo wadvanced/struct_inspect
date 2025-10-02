@@ -131,16 +131,16 @@ defmodule StructInspect do
   # Filters the fields of a struct or map, removing those with empty values.
   @spec filter_empty_fields(list(), list() | struct()) :: list()
   defp filter_empty_fields(struct, ommits) when is_list(struct) do
-    hidden =
+    except =
       ommits
-      |> Enum.find({:default, []}, &(elem(&1, 0) == :hidden))
+      |> Enum.find({:default, []}, &(elem(&1, 0) == :except))
       |> elem(1)
 
-    Enum.reject(struct, &(reject_key(&1, hidden) or reject_field(&1, ommits)))
+    Enum.reject(struct, &(reject_key(&1, except) or reject_field(&1, ommits)))
   end
 
   @spec reject_key(tuple(), list()) :: boolean()
-  defp reject_key({key, _value}, hidden), do: Enum.member?(hidden, key)
+  defp reject_key({key, _value}, except), do: Enum.member?(except, key)
 
   @spec reject_field(tuple(), list()) :: boolean()
   defp reject_field({_key, value}, ommits), do: Enum.any?(ommits, &empty_value?(value, &1))
