@@ -133,6 +133,7 @@ defmodule StructInspect do
   defp filter_empty_fields(struct, ommits) when is_list(struct),
     do: Enum.reject(struct, &reject_field(&1, ommits))
 
+  @spec reject_field(tuple(), list()) :: boolean()
   defp reject_field({:__struct__, _value}, ommits) do
     ommits
     |> Enum.find({false, false}, &(elem(&1, 0) == :struct_module))
