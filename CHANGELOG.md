@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Support for map.
-- Conditionally ommit the struct key :__struct__ that contains the struct module.
+- Allows list of fields to omitted from output
 
 ## [0.1.0] - 2025-10-02
 

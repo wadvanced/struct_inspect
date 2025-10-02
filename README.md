@@ -105,7 +105,7 @@ The following options are available in `StructInspect.Opts`:
 -   `empty_tuple`: Omits `{}`. (default: `true`)
 -   `true_value`: Omits `true`. (default: `false`)
 -   `false_value`: Omits `false`. (default: `false`)
--   `hidden`: List of keys to omits. (default: `[:__struct__]`)
+-   `except`: List of keys to omits. (default: `[:__struct__]`)
 
 ## License
 

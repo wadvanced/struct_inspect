@@ -150,7 +150,7 @@ Here is a complete list of all the available omission options that you can use t
 -   `empty_tuple` (default: `true`): Omits fields with an empty tuple (`{}`).
 -   `true_value` (default: `false`): Omits fields with a boolean value of `true`.
 -   `false_value` (default: `false`): Omits fields with a boolean value of `false`.
--   `hidden` (default: `[:__struct__]`): Hides the listed fields from the struct or map.
+-   `except` (default: `[:__struct__]`): Hides the listed fields from the struct or map.
 
 #### What is an "Empty Struct"?
 
