@@ -33,7 +33,7 @@ defmodule StructInspect.Overrides do
     quoted_overrides =
       :struct_inspect
       |> Application.get_env(:overrides, [])
-      |> get_overrides()
+      |> filter_overrides()
       |> Enum.map(fn {module, ommits} ->
         quote do
           defimpl Inspect, for: unquote(module) do
@@ -54,8 +54,8 @@ defmodule StructInspect.Overrides do
   ## PRIVATE
 
   # Parses the override configuration and returns a list of {module, ommits} tuples.
-  @spec get_overrides([atom() | tuple()]) :: [{module(), keyword()}]
-  defp get_overrides(overrides) do
+  @spec filter_overrides([atom() | tuple()]) :: [{module(), keyword()}]
+  defp filter_overrides(overrides) do
     overrides
     |> Enum.map(&override/1)
     |> Enum.reject(&reject_override/1)
@@ -70,14 +70,18 @@ defmodule StructInspect.Overrides do
   # Rejects invalid override entries.
   @spec reject_override(nil | {module(), any()}) :: boolean()
   defp reject_override(nil), do: true
-  defp reject_override({module, _attrs}), do: valid_module?(module)
 
-  # Validates if a module is a valid override target.
-  @spec valid_module?(module() | nil) :: boolean()
-  defp valid_module?(nil), do: false
-  defp valid_module?(StructInspect.Opts), do: false
+  defp reject_override({module, _attrs}),
+    do: reject_module?(module)
 
-  defp valid_module?(module) do
+  # Rejects non valid module override.
+  # Allows any struct and Map
+  @spec reject_module?(module() | nil) :: boolean()
+  defp reject_module?(nil), do: true
+
+  defp reject_module?(Map), do: false
+
+  defp reject_module?(module) do
     with {:module, compiled_module} <- Code.ensure_compiled(module),
          true <- :struct |> compiled_module.__info__() |> is_nil() do
       true

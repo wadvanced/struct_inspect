@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-10-03
+
+### Added
+
+- Support for map.
+- Conditionally ommit the struct key :__struct__ that contains the struct module.
+
 ## [0.1.0] - 2025-10-02
 
 ### Added

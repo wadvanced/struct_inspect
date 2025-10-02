@@ -102,11 +102,12 @@ defmodule StructInspect do
           list(atom()) | keyword() | StructInspect.Opts.t()
         ) :: Inspect.Algebra.t()
   def compact(module, struct, opts, ommits) do
+    ommits = ommits |> StructInspect.Opts.apply_to_defaults() |> Map.to_list()
+
     filtered_fields =
-      ommits
-      |> StructInspect.Opts.apply_to_defaults()
-      |> Map.from_struct()
-      |> filter_empty_fields(struct)
+      struct
+      |> Map.to_list()
+      |> filter_empty_fields(ommits)
 
     module
     |> name(struct)
@@ -128,21 +129,21 @@ defmodule StructInspect do
   defp name(_module, map) when is_map(map), do: "%{"
 
   # Filters the fields of a struct or map, removing those with empty values.
-  @spec filter_empty_fields(map(), map() | struct()) :: list()
-  defp filter_empty_fields(ommits, %_{} = struct) do
-    struct
-    |> Map.from_struct()
-    |> Enum.reject(fn {_key, value} -> Enum.any?(ommits, &empty_value?(value, &1)) end)
+  @spec filter_empty_fields(list(), list() | struct()) :: list()
+  defp filter_empty_fields(struct, ommits) when is_list(struct) do
+    hidden =
+      ommits
+      |> Enum.find({:default, []}, &(elem(&1, 0) == :hidden))
+      |> elem(1)
+
+    Enum.reject(struct, &(reject_key(&1, hidden) or reject_field(&1, ommits)))
   end
 
-  # Formats a key-value pair into an Inspect.Algebra document.
-  @spec format_field(tuple(), Inspect.Opts.t()) :: Inspect.Algebra.t()
-  defp format_field({key, value}, opts) do
-    Algebra.concat([
-      "#{key}: ",
-      Algebra.to_doc(value, opts)
-    ])
-  end
+  @spec reject_key(tuple(), list()) :: boolean()
+  defp reject_key({key, _value}, hidden), do: Enum.member?(hidden, key)
+
+  @spec reject_field(tuple(), list()) :: boolean()
+  defp reject_field({_key, value}, ommits), do: Enum.any?(ommits, &empty_value?(value, &1))
 
   # Checks if a value is considered "empty" based on the given atom.
   @spec empty_value?(any(), tuple()) :: boolean()
@@ -165,4 +166,13 @@ defmodule StructInspect do
   defp empty_value?(false, {:false_value, true}), do: true
   defp empty_value?(true, {:true_value, true}), do: true
   defp empty_value?(_value, _to_test), do: false
+
+  # Formats a key-value pair into an Inspect.Algebra document.
+  @spec format_field(tuple(), Inspect.Opts.t()) :: Inspect.Algebra.t()
+  defp format_field({key, value}, opts) do
+    Algebra.concat([
+      "#{key}: ",
+      Algebra.to_doc(value, opts)
+    ])
+  end
 end
