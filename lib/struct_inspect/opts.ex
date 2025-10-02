@@ -14,7 +14,8 @@ defmodule StructInspect.Opts do
           empty_struct: boolean(),
           empty_tuple: boolean(),
           true_value: boolean(),
-          false_value: boolean()
+          false_value: boolean(),
+          struct_module: boolean()
         }
 
   @type attributes :: t() | map() | keyword() | list(atom())
@@ -28,7 +29,8 @@ defmodule StructInspect.Opts do
             empty_struct: true,
             empty_tuple: true,
             true_value: false,
-            false_value: false
+            false_value: false,
+            struct_module: true
 
   @struct_inspect_default_ommits Application.compile_env(:struct_inspect, :ommits, [])
 
