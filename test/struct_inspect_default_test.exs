@@ -1,4 +1,7 @@
 defmodule StructInspectTest.Default do
+  @moduledoc """
+  Tests the default behavior of the `StructInspect` macro.
+  """
   use ExUnit.Case
   doctest StructInspect
 
