@@ -246,3 +246,21 @@ config :struct_inspect,
 ```
 
 This will set the `ignore_module_conflict` and `ignore_already_consolidated` compiler options, effectively hiding the warnings for the protocol overrides.
+
+## Overriding the Map Module
+
+`StructInspect` allows you to override the `Inspect` protocol for the `Map` module. This is a feature that can help you to control how maps are inspected in your application.
+
+**Warning:** Overriding the `Inspect` protocol for the `Map` module is a significant change that can affect the behavior of your application and its dependencies in unexpected ways. It is recommended to use this feature **only in the test environment**.
+
+To override the `Map` module, you need to add it to the `:overrides` configuration in your `config/test.exs` file:
+
+```elixir
+# in config/test.exs
+config :struct_inspect,
+  overrides: [
+    Map
+  ]
+```
+
+This will cause all maps to be inspected using the `StructInspect` rules, which can be useful for cleaner test output.
