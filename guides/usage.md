@@ -39,6 +39,28 @@ iex> struct = %MyStruct{id: 1, name: "Gemini", bio: nil, email: ""}
 
 As you can see, the `:bio` and `:email` fields are not present in the inspected output because their values are `nil` and `""` respectively.
 
+## Deriving vs. Using StructInspect
+
+In Elixir, you can use `@derive Inspect` to provide an inspect implementation for your structs.
+
+```elixir
+defmodule User do
+  @derive {Inspect, only: [:name]}
+  defstruct [:name, :email]
+end
+```
+
+The `@derive Inspect` macro allows for customization through the `:only`, `:except`, and `:optional` options. The `:optional` option is similar to what `StructInspect` does, but it requires you to explicitly list all the fields that should be considered optional. For more information, see the [official documentation](https://hexdocs.pm/elixir/Inspect.html#module-deriving).
+
+`StructInspect` provides an alternative. Instead of specifying which fields to omit, you define rules based on the *values* of the fields. By using `use StructInspect`, you can customize the inspect output to omit fields with certain values, such as `nil`, empty strings, or empty lists. This helps create a more concise representation of your data structures, especially in logging and interactive sessions, without having to list every possible optional field.
+
+In summary:
+
+-   `@derive Inspect`: Provides an inspect implementation with customization options (`:only`, `:except`, `:optional`). You need to specify the fields to be considered optional.
+-   `use StructInspect`: Provides a configurable inspect implementation that allows you to omit fields based on their values.
+
+Use `StructInspect` when you need to control the inspect output of your structs by defining omission rules based on values rather than field names.
+
 ## Configuration
 
 `StructInspect` offers a flexible configuration system that allows you to tailor the inspection behavior to your specific needs. The configuration is managed by the `StructInspect.Opts` module, which defines all the available options and their default values.
@@ -128,7 +150,7 @@ Here is a complete list of all the available omission options that you can use t
 -   `empty_tuple` (default: `true`): Omits fields with an empty tuple (`{}`).
 -   `true_value` (default: `false`): Omits fields with a boolean value of `true`.
 -   `false_value` (default: `false`): Omits fields with a boolean value of `false`.
--   `struct_module` (default: `true`): Omits the :__struct__ key value from the struct.
+-   `hidden` (default: `[:__struct__]`): Hides the listed fields from the struct or map.
 
 #### What is an "Empty Struct"?
 
