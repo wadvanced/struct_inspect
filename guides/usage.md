@@ -139,20 +139,13 @@ For example, consider this struct:
 defmodule Address do
   use StructInspect
 
-  defstruct [:street, :city, :zip_code, po_box?: false]
+  defstruct [:street, :city, zip_code: "00000-0000", po_box?: false]
 end
 ```
 
-If you create an `Address` struct like this, it is considered empty because all its fields are `nil`, which is the default value for fields in a struct:
+If you create an `Address` struct like this, it is considered empty, because :street, :city are nil and the fields :zip_code and :po_box? contain theirs default values, therefore:
 
-```elixir
-address = %Address{}
-# %Address{}
-# or
-address = %Address{street: nil, city: nil, zip_code: "00000-0000"}
-```
-
-And you have a `User` struct that contains this address:
+If you have a `User` struct that contains a address struct without changes:
 
 ```elixir
 defmodule User do
@@ -161,10 +154,10 @@ defmodule User do
   defstruct [:name, :address]
 end
 
-user = %User{name: "Gemini", address: address}
+user = %User{name: "Gemini", address: %Address{}}
 ```
 
-When you inspect the `user` struct, the `:address` field will be omitted because the `address` struct itself is considered empty, even though zip_code contains "00000-0000".
+When you inspect the `user` struct, the `:address` field will be omitted because the `address` struct itself is considered empty.
 
 ```elixir
 iex> user
@@ -175,9 +168,27 @@ This helps to keep your logs and console output clean, especially when dealing w
 
 ## Overriding Structs from Dependencies
 
-`StructInspect` provides a clean way to customize the inspection of structs from your dependencies without altering their source code. This is achieved through a configuration-based override system.
+`StructInspect` provides a clean way to customize the inspection of structs from your dependencies without altering their source code. This can be done by defining overrides in your configuration.
 
-A interesting case is the `Phoenix.LiveView.Socket` struct, which is notoriously large and can clutter your development console.
+Let's take, for example, the `Phoenix.LiveView.Socket` struct, which is a notoriously large struct.
+
+`Phoenix.LiveView.Socket` with default Inspect protocol implementation:
+
+```elixir
+iex(1)> %Phoenix.LiveView.Socket{}
+#Phoenix.LiveView.Socket<
+  id: nil,
+  endpoint: nil,
+  view: nil,
+  parent_pid: nil,
+  root_pid: nil,
+  router: nil,
+  assigns: %{__changed__: %{}},
+  transport_pid: nil,
+  sticky?: false,
+  ...
+>
+```
 
 ### Configure the Overrides
 
@@ -191,18 +202,29 @@ config :struct_inspect,
   ]
 ```
 
-By default, this will use the standard `StructInspect` options. If you want to specify custom options for a particular struct, you can use a tuple where the second element can be a keyword, list of atoms or a map, see the [Configuration](#configuration) section in this document. Here is a sample configuration:
+Now with the override in place, here is the same output for Phoenix.LiveView.Socket struct:
+```elixir
+iex(1)> %Phoenix.LiveView.Socket{}
+%Phoenix.LiveView.Socket{
+  private: %{live_temp: %{}},
+  assigns: %{__changed__: %{}},
+  sticky?: false
+}
+```
+
+By default, the configuration, will use the standard `StructInspect` options. If you want to specify, what type of contents are to be omitted, for a particular struct, you can use a tuple where the second element can be a keyword, list of atoms or a map, see the [Configuration](#configuration) section in this document for options configuration, for example:
 
 ```elixir
-# in config/config.exs
+# in config/config.exs or test/config.exs
 config :struct_inspect,
   overrides: [
     {Phoenix.LiveView.Socket, [nil_value: false, empty_struct: false]},
-    Another.Module
+    Another.Module,
+    {SpecialStruct, [:nil_value, :empty_string]}
   ]
 ```
 
-In the example above, for `Phoenix.Live_View.Socket`, we are specifying that we are overriding the defaults by allowing nil values and empty struct to be.
+In the example above, for `Phoenix.Live_View.Socket`, we are specifying that we are overriding the defaults by allowing nil values and empty struct to be outputted. `Another.Module` will take the StructInspect.Opts defaults, and SpecialStruct will only omit nil values and empty strings.
 
 ### Handling Compiler Warnings
 
