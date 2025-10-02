@@ -9,6 +9,11 @@ defmodule StructInspectOverrides do
   The overrides are configured in your `config/config.exs` file.
   """
   @inspect_overrides Application.compile_env(:struct_inspect, :overrides, [])
+  @inspect_ignore_compiler_warning Application.compile_env(
+                                     :struct_inspect,
+                                     :ignore_compiler_warning,
+                                     false
+                                   )
 
   @doc """
   Generates `Inspect` implementations for the modules configured in the application environment.
@@ -18,6 +23,14 @@ defmodule StructInspectOverrides do
   """
   @spec __using__(keyword()) :: Macro.t()
   defmacro __using__(_opts) do
+    quoted_compile_option =
+      quote do
+        Code.compiler_options(
+          ignore_module_conflict: unquote(@inspect_ignore_compiler_warning),
+          ignore_already_consolidated: unquote(@inspect_ignore_compiler_warning)
+        )
+      end
+
     quoted_overrides =
       @inspect_overrides
       |> get_overrides()
@@ -32,14 +45,16 @@ defmodule StructInspectOverrides do
       end)
 
     quote do
-      (unquote_splicing(quoted_overrides))
+      unquote(quoted_compile_option)
+
+      unquote(quoted_overrides)
     end
   end
 
   ## PRIVATE
 
   # Parses the override configuration and returns a list of {module, ommits} tuples.
-  @spec get_overrides(keyword()) :: [{module(), keyword()}]
+  @spec get_overrides([atom() | tuple()]) :: [{module(), keyword()}]
   defp get_overrides(overrides) do
     overrides
     |> Enum.map(&override/1)
@@ -75,9 +90,6 @@ end
 defmodule EnableOverrides do
   @moduledoc """
   Enables the global `Inspect` overrides defined in the application configuration.
-
-  You can `use EnableOverrides` in your application, for example in `application.ex`,
-  to activate the global inspection overrides.
   """
   use StructInspectOverrides
 end
