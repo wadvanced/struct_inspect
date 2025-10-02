@@ -31,7 +31,7 @@ defmodule StructInspect.MixProject do
         main: "readme",
         source_ref: "v#{@version}",
         source_url: "https://github.com/wadvanced/struct_inspect",
-        extras: ["README.md", "LICENSE.md"]
+        extras: ["README.md", "guides/usage.md", "LICENSE"]
       ],
       aliases: aliases()
     ]
