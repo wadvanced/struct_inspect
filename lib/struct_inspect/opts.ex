@@ -15,7 +15,7 @@ defmodule StructInspect.Opts do
           empty_tuple: boolean(),
           true_value: boolean(),
           false_value: boolean(),
-          struct_module: boolean()
+          hidden: list()
         }
 
   @type attributes :: t() | map() | keyword() | list(atom())
@@ -30,7 +30,7 @@ defmodule StructInspect.Opts do
             empty_tuple: true,
             true_value: false,
             false_value: false,
-            struct_module: true
+            hidden: [:__struct__]
 
   @struct_inspect_default_ommits Application.compile_env(:struct_inspect, :ommits, [])
 
@@ -81,11 +81,15 @@ defmodule StructInspect.Opts do
     if Keyword.keyword?(ommits) do
       struct(options, ommits)
     else
-      true_opts = Map.new(ommits, &{&1, true})
+      true_opts =
+        ommits
+        |> Map.new(&{&1, true})
+        |> Enum.reject(&(elem(&1, 0) == :hidden))
 
       options
       |> Map.keys()
       |> List.delete(:__struct__)
+      |> List.delete(:hidden)
       |> Enum.map(&{&1, false})
       |> then(&struct(options, &1))
       |> struct(true_opts)
