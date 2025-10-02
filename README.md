@@ -14,7 +14,7 @@ The package can be installed by adding `struct_inspect` to your list of dependen
 ```elixir
 def deps do
   [
-    {:struct_inspect, "~> 0.1.0"}
+    {:struct_inspect, "~> 0.1.1"}
   ]
 end
 ```
@@ -105,6 +105,8 @@ The following options are available in `StructInspect.Opts`:
 -   `empty_tuple`: Omits `{}`. (default: `true`)
 -   `true_value`: Omits `true`. (default: `false`)
 -   `false_value`: Omits `false`. (default: `false`)
+-   `struct_module`: Omits :__struct__ value. (default: `true`)
+
 
 ## License
 

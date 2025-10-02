@@ -9,7 +9,7 @@ To begin using `StructInspect`, add it to your list of dependencies in your `mix
 ```elixir
 def deps do
   [
-    {:struct_inspect, "~> 0.1.0"}
+    {:struct_inspect, "~> 0.1.1"}
   ]
 end
 ```
@@ -119,15 +119,16 @@ The options passed directly to `use StructInspect` in a module will be merged wi
 Here is a complete list of all the available omission options that you can use to configure `StructInspect`.
 
 -   `nil_value` (default: `true`): Omits fields with a value of `nil`.
--   `zero_integer_value` (default: `true`): Omits fields with an integer value of `0`.
--   `zero_float_value` (default: `true`): Omits fields with a float value of `0.0`.
+-   `zero_integer_value` (default: `false`): Omits fields with an integer value of `0`.
+-   `zero_float_value` (default: `false`): Omits fields with a float value of `0.0`.
 -   `empty_string` (default: `true`): Omits fields with an empty string value (`""`).
 -   `empty_list` (default: `true`): Omits fields with an empty list (`[]`).
--   `empty_map` (default: `false`): Omits fields with an empty map (`%{}`).
+-   `empty_map` (default: `true`): Omits fields with an empty map (`%{}`).
 -   `empty_struct` (default: `true`): Omits fields that contain an "empty" struct. See ['What is an "Empty Struct"?'](#what-is-an-empty-struct) below.
--   `empty_tuple` (default: `false`): Omits fields with an empty tuple (`{}`).
+-   `empty_tuple` (default: `true`): Omits fields with an empty tuple (`{}`).
 -   `true_value` (default: `false`): Omits fields with a boolean value of `true`.
 -   `false_value` (default: `false`): Omits fields with a boolean value of `false`.
+-   `struct_module` (default: `true`): Omits the :__struct__ key value from the struct.
 
 #### What is an "Empty Struct"?
 
