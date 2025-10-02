@@ -6,6 +6,7 @@ defmodule StructInspect.MixProject do
   def project do
     [
       app: :struct_inspect,
+      mod: StructInspect.Overrides,
       version: @version,
       elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -16,7 +17,7 @@ defmodule StructInspect.MixProject do
         plt_add_apps: [:eex, :mix]
       ],
       # Hex
-      description: "A highly configurable library to customize struct inspection.",
+      description: "Configurable library to customize struct inspection.",
       package: [
         name: "struct_inspect",
         maintainers: ["Federico Alcántara"],

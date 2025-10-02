@@ -1,4 +1,4 @@
-defmodule StructInspectOverrides do
+defmodule StructInspect.Overrides do
   @moduledoc """
   Provides a mechanism to globally override the `Inspect` implementation for structs.
 
@@ -8,7 +8,6 @@ defmodule StructInspectOverrides do
 
   The overrides are configured in your `config/config.exs` file.
   """
-  @inspect_overrides Application.compile_env(:struct_inspect, :overrides, [])
   @inspect_ignore_compiler_warning Application.compile_env(
                                      :struct_inspect,
                                      :ignore_compiler_warning,
@@ -32,7 +31,8 @@ defmodule StructInspectOverrides do
       end
 
     quoted_overrides =
-      @inspect_overrides
+      :struct_inspect
+      |> Application.get_env(:overrides, [])
       |> get_overrides()
       |> Enum.map(fn {module, ommits} ->
         quote do
@@ -91,5 +91,5 @@ defmodule EnableOverrides do
   @moduledoc """
   Enables the global `Inspect` overrides defined in the application configuration.
   """
-  use StructInspectOverrides
+  use StructInspect.Overrides
 end
