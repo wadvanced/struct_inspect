@@ -2,5 +2,3 @@
 Application.put_env(:struct_inspect, :overrides, [StructInspectTest.OverridableStruct])
 
 ExUnit.start()
-
-use StructInspect.Overrides

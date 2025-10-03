@@ -3,6 +3,7 @@ defmodule StructInspectTest.Overrides do
   Tests the override mechanism for `StructInspect`.
   """
   use ExUnit.Case
+  use StructInspect.Overrides
 
   alias StructInspectTest.OverridableStruct
 
