@@ -9,7 +9,7 @@ To begin using `StructInspect`, add it to your list of dependencies in your `mix
 ```elixir
 def deps do
   [
-    {:struct_inspect, "~> 0.1.1"}
+    {:struct_inspect, "~> 0.1.2"}
   ]
 end
 ```
@@ -248,6 +248,30 @@ config :struct_inspect,
 ```
 
 In the example above, for `Phoenix.Live_View.Socket`, we are specifying that we are overriding the defaults by allowing nil values and empty struct to be outputted. `Another.Module` will take the StructInspect.Opts defaults, and SpecialStruct will only omit nil values and empty strings.
+
+### Enabling the Overrides
+
+To enable the configured overrides, you need to `use StructInspect.Overrides` in a file that is compiled by the Elixir compiler.
+
+For the `test` environment, a good place for this is in your `test/test_helper.exs` file:
+
+```elixir
+# in test/test_helper.exs
+ExUnit.start()
+
+use StructInspect.Overrides
+```
+
+For the `dev` and `prod` environments, you can create a new file, for example `lib/struct_inspect_overrides.ex`, with the following content:
+
+```elixir
+# in lib/struct_inspect_overrides.ex
+defmodule MyApp.StructInspectOverrides do
+  use StructInspect.Overrides
+end
+```
+
+This will ensure that the `Inspect` protocol is overridden for the configured modules when your application is compiled.
 
 ### Handling Compiler Warnings
 
