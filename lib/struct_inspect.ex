@@ -203,5 +203,4 @@ defmodule StructInspect do
   defp empty_value?(false, {:false_value, true}), do: true
   defp empty_value?(true, {:true_value, true}), do: true
   defp empty_value?(_value, _to_test), do: false
-
 end
