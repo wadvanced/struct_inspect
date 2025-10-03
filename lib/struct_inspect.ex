@@ -40,7 +40,7 @@ defmodule StructInspect do
   config :struct_inspect, :ommits, [:nil_value, :empty_string]
   ```
   """
-
+  import Inspect.Algebra
   alias Inspect.Algebra
 
   @doc """
@@ -72,7 +72,7 @@ defmodule StructInspect do
     quote do
       defimpl Inspect do
         def inspect(struct, opts) do
-          StructInspect.compact(__MODULE__, struct, opts, unquote(ommits))
+          StructInspect.compact(struct, opts, unquote(ommits))
         end
       end
     end
@@ -81,52 +81,89 @@ defmodule StructInspect do
   @doc """
   Filters the struct fields and builds the inspection algebra.
 
-  This function takes a struct, filters out the fields with empty values based on the
-  `ommits` list, and then constructs the `Inspect.Algebra` document for the final output.
-
   ## Parameters
-
-  - `module` (module()) - The struct's module.
-  - `struct` (map() | struct()) - The struct or map to be inspected.
+  - `data` (map() | struct()) - The struct or map to be inspected.
   - `opts` (Inspect.Opts.t()) - The inspection options.
   - `ommits` (keyword()) - A list of atoms representing the types of empty values to omit.
 
   ## Returns
-
   Inspect.Algebra.t() - The algebra document representing the compacted struct.
   """
   @spec compact(
-          module(),
           map() | struct(),
           Inspect.Opts.t(),
           list(atom()) | keyword() | StructInspect.Opts.t()
-        ) :: Inspect.Algebra.t()
-  def compact(module, struct, opts, ommits) do
+        ) :: Algebra.t()
+
+  def compact(map, opts, ommits) do
     ommits = ommits |> StructInspect.Opts.apply_to_defaults() |> Map.to_list()
 
-    filtered_fields =
-      struct
-      |> Map.to_list()
-      |> filter_empty_fields(ommits)
+    list =
+      if Keyword.get(opts.custom_options, :sort_maps) do
+        map |> Map.to_list() |> :lists.sort()
+      else
+        Map.to_list(map)
+      end
 
-    module
-    |> name(struct)
-    |> Algebra.container_doc(filtered_fields, "}", opts, &format_field/2)
+    filtered_list = filter_empty_fields(list, ommits)
+
+    fun =
+      if Inspect.List.keyword?(list) do
+        &Inspect.List.keyword/2
+      else
+        sep = color(" => ", :map, opts)
+        &format_key_value(&1, &2, sep)
+      end
+
+    name = name(map)
+    map_container_doc(filtered_list, name, opts, fun)
+  end
+
+  @doc """
+  Builds the inspection algebra for a map.
+
+  ## Parameters
+  - `map` (map()) - The map to be inspected.
+  - `name` (binary()) - The name of the map.
+  - `infos` (list()) - A list of fields to be inspected.
+  - `opts` (Inspect.Opts.t()) - The inspection options.
+
+  ## Returns
+  Inspect.Algebra.t() - The algebra document representing the compacted map.
+  """
+  @spec inspect(map(), binary(), list(), Inspect.Opts.t()) :: Algebra.t()
+  def inspect(map, name, infos, opts) do
+    fun = fn %{field: field}, opts -> Inspect.List.keyword({field, Map.get(map, field)}, opts) end
+    map_container_doc(infos, name, opts, fun)
   end
 
   ## PRIVATE
 
-  # Returns the proper name for a map or a struct
-  @spec name(module(), map() | struct()) :: binary()
-  defp name(module, struct) when is_struct(struct) do
-    module
-    |> Module.split()
-    |> Enum.drop(1)
-    |> Enum.join(".")
-    |> then(&"%#{&1}{")
+  # Formats a key-value pair into an Inspect.Algebra document.
+  @spec format_key_value(tuple(), Inspect.Opts.t(), binary()) :: Algebra.t()
+  defp format_key_value({key, value}, opts, sep) do
+    value_doc = to_doc(value, opts)
+
+    key
+    |> to_doc(opts)
+    |> concat(sep)
+    |> concat(value_doc)
   end
 
-  defp name(_module, map) when is_map(map), do: "%{"
+  @spec map_container_doc(list(), binary(), Inspect.Opts.t(), function()) :: Algebra.t()
+  defp map_container_doc(list, name, opts, fun) do
+    open = color("%" <> name <> "{", :map, opts)
+    sep = color(",", :map, opts)
+    close = color("}", :map, opts)
+    container_doc(open, list, close, opts, fun, separator: sep, break: :strict)
+  end
+
+  # Returns the proper name for a map or a struct
+  @spec name(map() | struct()) :: binary()
+  defp name(%{__struct__: struct}),
+    do: String.replace("%#{struct}", "Elixir.", "")
+
+  defp name(_map), do: ""
 
   # Filters the fields of a struct or map, removing those with empty values.
   @spec filter_empty_fields(list(), list() | struct()) :: list()
@@ -167,12 +204,4 @@ defmodule StructInspect do
   defp empty_value?(true, {:true_value, true}), do: true
   defp empty_value?(_value, _to_test), do: false
 
-  # Formats a key-value pair into an Inspect.Algebra document.
-  @spec format_field(tuple(), Inspect.Opts.t()) :: Inspect.Algebra.t()
-  defp format_field({key, value}, opts) do
-    Algebra.concat([
-      "#{key}: ",
-      Algebra.to_doc(value, opts)
-    ])
-  end
 end

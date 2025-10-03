@@ -18,7 +18,7 @@ defmodule StructInspect.Opts do
           except: list()
         }
 
-  @type attributes :: t() | map() | keyword() | list(atom())
+  @type attributes :: t() | map() | keyword() | list(atom()) | atom()
 
   defstruct nil_value: true,
             zero_integer_value: false,
@@ -95,6 +95,9 @@ defmodule StructInspect.Opts do
       |> struct(true_opts)
     end
   end
+
+  def change(%StructInspect.Opts{} = options, ommit) when is_atom(ommit),
+    do: change(options, [ommit])
 
   @doc """
   Applies the given attributes to the default options.
