@@ -1,12 +1,11 @@
 defmodule StructInspect.MixProject do
   use Mix.Project
 
-  @version "0.1.1"
+  @version "0.1.2"
 
   def project do
     [
       app: :struct_inspect,
-      mod: StructInspect.Overrides,
       version: @version,
       elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),

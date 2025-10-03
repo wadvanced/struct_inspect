@@ -7,12 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2025-10-03
+
+### Fixed
+
+- Map override failing.
+
 ## [0.1.1] - 2025-10-03
 
 ### Added
 
 - Support for map.
-- Allows list of fields to omitted from output
+- Allows list of fields to omitted from output.
 
 ## [0.1.0] - 2025-10-02
 
