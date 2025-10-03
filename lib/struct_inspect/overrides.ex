@@ -38,7 +38,7 @@ defmodule StructInspect.Overrides do
         quote do
           defimpl Inspect, for: unquote(module) do
             def inspect(struct, opts) do
-              StructInspect.compact(struct, opts, unquote(Macro.escape(ommits)))
+              StructInspect.inspect(struct, opts, unquote(Macro.escape(ommits)))
             end
           end
         end

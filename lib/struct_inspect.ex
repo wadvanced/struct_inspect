@@ -63,7 +63,7 @@ defmodule StructInspect do
 
   This macro is called before the module is compiled and defines the `Inspect`
   implementation. The implementation delegates the actual inspection logic to the
-  `compact/4` function.
+  `inspect/4` function.
   """
   @spec __before_compile__(Macro.Env.t()) :: Macro.t()
   defmacro __before_compile__(env) do
@@ -72,7 +72,7 @@ defmodule StructInspect do
     quote do
       defimpl Inspect do
         def inspect(struct, opts) do
-          StructInspect.compact(struct, opts, unquote(ommits))
+          StructInspect.inspect(struct, opts, unquote(ommits))
         end
       end
     end
@@ -89,13 +89,13 @@ defmodule StructInspect do
   ## Returns
   Inspect.Algebra.t() - The algebra document representing the compacted struct.
   """
-  @spec compact(
+  @spec inspect(
           map() | struct(),
           Inspect.Opts.t(),
           list(atom()) | keyword() | StructInspect.Opts.t()
         ) :: Algebra.t()
 
-  def compact(map, opts, ommits) do
+  def inspect(map, opts, ommits) do
     ommits = ommits |> StructInspect.Opts.apply_to_defaults() |> Map.to_list()
 
     list =
