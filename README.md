@@ -1,4 +1,7 @@
 # StructInspect
+<script>
+  import version from "./VERSION.md"
+</script>  
 
 [![Hex.pm](https://img.shields.io/hexpm/v/struct_inspect.svg)](https://hex.pm/packages/struct_inspect)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
@@ -14,7 +17,7 @@ The package can be installed by adding `struct_inspect` to your list of dependen
 ```elixir
 def deps do
   [
-    {:struct_inspect, "~> 0.1.2"}
+    {:struct_inspect, "~> 0.1.3"}
   ]
 end
 ```

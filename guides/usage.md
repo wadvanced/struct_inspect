@@ -9,7 +9,7 @@ To begin using `StructInspect`, add it to your list of dependencies in your `mix
 ```elixir
 def deps do
   [
-    {:struct_inspect, "~> 0.1.2"}
+    {:struct_inspect, "~> 0.1.3"}
   ]
 end
 ```
