@@ -1,9 +1,5 @@
-# StructInspect
-<script>
-  import version from "./VERSION.md"
-</script>  
-
-[![CI](https://github.com/[your-username]/struct_inspect/actions/workflows/ci.yml/badge.svg)](https://github.com/[your-username]/struct_inspect/actions/workflows/ci.yml)
+# StructInspect 
+[![CI](https://github.com/wadvanced/struct_inspect/actions/workflows/ci.yml/badge.svg)](https://github.com/[your-username]/struct_inspect/actions/workflows/ci.yml)
 [![Hex.pm](https://img.shields.io/hexpm/v/struct_inspect.svg)](https://hex.pm/packages/struct_inspect)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 [![Documentation](https://img.shields.io/badge/documentation-gray)](https://hexdocs.pm/struct_inspect)
