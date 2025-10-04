@@ -9,7 +9,7 @@ To begin using `StructInspect`, add it to your list of dependencies in your `mix
 ```elixir
 def deps do
   [
-    {:struct_inspect, "~> 0.1.2"}
+    {:struct_inspect, "~> 0.1.3"}
   ]
 end
 ```
@@ -28,7 +28,7 @@ defmodule MyStruct do
 end
 ```
 
-By default, `StructInspect` will omit fields with `nil` values, empty strings (`""`), empty lists (`[]`), and empty structs (`%SomeStruct{}`).
+By default, `StructInspect` will omit fields with `nil` values, empty strings (`""`), empty lists (`[]`), empty tuples ({}), empty structs (`%SomeStruct{}`) and key :__struct__.
 
 Let's see it in action:
 
@@ -75,9 +75,9 @@ You can configure `StructInspect` in three ways:
 
 You can customize the inspection behavior for a specific struct by passing options to the `use StructInspect` macro. You can provide these options as a map, a keyword list, or a list of atoms.
 
-#### Using a Keyword List or Map
+#### Using a Keyword List
 
-This is the most common way to configure a struct. You can override the default options by providing a keyword list or a map.
+This is the most common way to configure a struct. You can override the default options by providing a keyword list.
 
 For example, to also omit fields with `false` values:
 
@@ -129,7 +129,7 @@ config :struct_inspect,
 You can also provide a list of atoms to enable only specific options globally:
 
 ```elixir
-# This setting will produce a `StructInspect.Opts` set with only nils, empty maps and zero integers enabled.
+# This setting will produce a `StructInspect.Opts` set with only nils, empty maps and zero integers enabled, and the except with [:__struct__].
 config :struct_inspect,
   ommits: [:nil_value, :empty_map, :zero_integer]
 ```
@@ -151,6 +151,8 @@ Here is a complete list of all the available omission options that you can use t
 -   `true_value` (default: `false`): Omits fields with a boolean value of `true`.
 -   `false_value` (default: `false`): Omits fields with a boolean value of `false`.
 -   `except` (default: `[:__struct__]`): Hides the listed fields from the struct or map.
+
+> **Note on `except`**: The `except` option is for hiding fields by their **name**, while the other omission options hide fields based on their **value**. Fields listed in `except` will always be hidden.
 
 #### What is an "Empty Struct"?
 
@@ -310,3 +312,65 @@ config :struct_inspect,
 ```
 
 This will cause all maps to be inspected using the `StructInspect` rules, which can be useful for cleaner test output.
+
+## Examples
+
+Here are a few examples demonstrating how to combine different configuration options.
+
+### Example 1: Omitting `nil` and `false` values
+
+Let's define a struct where we want to omit fields that are `nil` or `false`.
+
+```elixir
+defmodule UserPreferences do
+  use StructInspect, [:nil_value, :false_value]
+
+  defstruct [:user_id, :notifications_enabled, :theme, :show_hidden_files]
+end
+
+# With default `nil_value: true` and `false_value: true`
+iex> prefs = %UserPreferences{user_id: 123, notifications_enabled: true, theme: nil, show_hidden_files: false}
+%UserPreferences{user_id: 123, notifications_enabled: true}
+```
+In this case, `:theme` is omitted because it's `nil`, and `:show_hidden_files` is omitted because it's `false`.
+
+### Example 2: Using `except` to hide a specific field
+
+You can use the `except` option to hide a field by its name, regardless of its value. For instance, you might want to hide a sensitive token.
+
+```elixir
+defmodule Session do
+  use StructInspect, except: [:__struct__, :token]
+
+  defstruct [:session_id, :user_id, :token]
+end
+
+iex> session = %Session{session_id: "abc-123", user_id: 42, token: "super-secret-token"}
+%Session{session_id: "abc-123", user_id: 42}
+```
+Here, the `:token` field is never shown in the inspected output.
+
+### Example 3: Combining value-based omissions and `except`
+
+You can combine value-based omissions with the `except` option.
+
+```elixir
+defmodule Report do
+  # Since the given options are a keyword list, they are combined with the 
+  # StructInspect.Opts default state, so empty list, empty string, empty maps 
+  # and empty structs are also ommitted
+  use StructInspect, false_value: true, except: [:__struct__, :raw_data]
+
+  defstruct [:id, :name, :details, :processed, :raw_data]
+end
+
+# :processed is false, so it's omitted.
+# :raw_data is in the except list, so it's omitted.
+# :details is omitted because it contains a empty string value.
+iex> report = %Report{id: 1, name: "Sales", details: "", processed: false, raw_data: %{some: "data"}}
+%Report{id: 1, name: "Sales"}
+
+# Even if :processed is true, :raw_data is still omitted.
+iex> report = %Report{id: 2, name: "Inventory", processed: true, raw_data: %{some: "data"}}
+%Report{id: 2, name: "Inventory", processed: true}
+```

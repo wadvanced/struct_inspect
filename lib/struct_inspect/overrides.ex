@@ -18,7 +18,7 @@ defmodule StructInspect.Overrides do
   Generates `Inspect` implementations for the modules configured in the application environment.
 
   This macro reads the `:struct_inspect, :overrides` configuration and for each module,
-  it generates a `defimpl Inspect` that uses `StructInspect.compact/4` for inspection.
+  it generates a `defimpl Inspect` that uses `StructInspect.inspect/3` for inspection.
   """
   @spec __using__(keyword()) :: Macro.t()
   defmacro __using__(_opts) do

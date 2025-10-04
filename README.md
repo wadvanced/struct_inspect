@@ -1,11 +1,13 @@
-# StructInspect
-
+# StructInspect 
+[![CI](https://github.com/wadvanced/struct_inspect/actions/workflows/ci.yml/badge.svg)](https://github.com/[your-username]/struct_inspect/actions/workflows/ci.yml)
 [![Hex.pm](https://img.shields.io/hexpm/v/struct_inspect.svg)](https://hex.pm/packages/struct_inspect)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
+[![Documentation](https://img.shields.io/badge/documentation-gray)](https://hexdocs.pm/struct_inspect)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`StructInspect` is a highly configurable library to customize struct inspection in Elixir. It allows you to omit fields with "empty" values, producing cleaner and more readable output, especially for complex structs.
+`StructInspect` is a configurable library to customize struct and map inspection in Elixir. It allows you to omit fields with "empty" values, producing cleaner and more readable output.
 
-For a more detailed guide with advanced usage examples, please see the [Usage Guide](guides/usage.md).
+For more details and advanced usage and configuration examples, please read the [Usage Guide](guides/usage.md).
 
 ## Installation
 
@@ -14,14 +16,14 @@ The package can be installed by adding `struct_inspect` to your list of dependen
 ```elixir
 def deps do
   [
-    {:struct_inspect, "~> 0.1.2"}
+    {:struct_inspect, "~> 0.1.3"}
   ]
 end
 ```
 
 ## Usage
 
-To use `StructInspect`, you just need to `use StructInspect` in your struct definition.
+To enable `StructInspect` for a particular struct, you just `use StructInspect` in your module definition.
 
 ```elixir
 defmodule MyStruct do
