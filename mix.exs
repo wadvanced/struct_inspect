@@ -51,8 +51,8 @@ defmodule StructInspect.MixProject do
   defp deps do
     [
       ## Dev dependencies
-      {:credo, "1.7.11", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "1.4.5", only: [:dev, :test], runtime: false},
       {:doctor, "~> 0.22", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.38", only: [:dev, :test], runtime: false}
     ]
