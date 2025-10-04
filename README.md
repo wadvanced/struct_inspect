@@ -5,9 +5,9 @@
 [![Documentation](https://img.shields.io/badge/documentation-gray)](https://hexdocs.pm/struct_inspect)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`StructInspect` is a highly configurable library to customize struct inspection in Elixir. It allows you to omit fields with "empty" values, producing cleaner and more readable output, especially for complex structs.
+`StructInspect` is a configurable library to customize struct and map inspection in Elixir. It allows you to omit fields with "empty" values, producing cleaner and more readable output.
 
-For a more detailed guide with advanced usage examples, please see the [Usage Guide](guides/usage.md).
+For more details and advanced usage and configuration examples, please read the [Usage Guide](guides/usage.md).
 
 ## Installation
 
@@ -23,7 +23,7 @@ end
 
 ## Usage
 
-To use `StructInspect`, you just need to `use StructInspect` in your struct definition.
+To enable `StructInspect` for a particular struct, you just `use StructInspect` in your module definition.
 
 ```elixir
 defmodule MyStruct do
