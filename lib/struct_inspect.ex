@@ -74,6 +74,8 @@ defmodule StructInspect do
         def inspect(struct, opts) do
           StructInspect.inspect(struct, opts, unquote(ommits))
         end
+
+        defdelegate inspect(map, name, infos, opts), to: StructInspect
       end
     end
   end
@@ -161,7 +163,7 @@ defmodule StructInspect do
   # Returns the proper name for a map or a struct
   @spec name(map() | struct()) :: binary()
   defp name(%{__struct__: struct}),
-    do: String.replace("%#{struct}", "Elixir.", "")
+    do: String.replace("#{struct}", "Elixir.", "")
 
   defp name(_map), do: ""
 

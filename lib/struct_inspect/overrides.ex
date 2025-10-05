@@ -40,6 +40,8 @@ defmodule StructInspect.Overrides do
             def inspect(struct, opts) do
               StructInspect.inspect(struct, opts, unquote(Macro.escape(ommits)))
             end
+
+            defdelegate inspect(map, name, infos, opts), to: StructInspect
           end
         end
       end)
