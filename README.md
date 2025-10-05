@@ -16,7 +16,7 @@ The package can be installed by adding `struct_inspect` to your list of dependen
 ```elixir
 def deps do
   [
-    {:struct_inspect, "~> 0.1.3"}
+    {:struct_inspect, "~> 0.1.4"}
   ]
 end
 ```
